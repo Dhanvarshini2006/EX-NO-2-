@@ -26,18 +26,108 @@ To encrypt a message, one would break the message into digrams (groups of 2 lett
 ## ALGORITHM:
 
 STEP-1: Read the plain text from the user.
+
 STEP-2: Read the keyword from the user.
+
 STEP-3: Arrange the keyword without duplicates in a 5*5 matrix in the row order and fill the remaining cells with missed out letters in alphabetical order. Note that ‘i’ and ‘j’ takes the same cell.
+
 STEP-4: Group the plain text in pairs and match the corresponding corner letters by forming a rectangular grid.
+
 STEP-5: Display the obtained cipher text.
 
 
 
 
 Program:
+```
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+char keyTable[5][5];
+int used[26];
+
+void createKeyTable(char key[])
+{
+    int i, j, k = 0;
+    char c;
+
+    for (i = 0; key[i]; i++) {
+        c = toupper(key[i]);
+        if (c == 'J') c = 'I';
+        if (c >= 'A' && c <= 'Z' && !used[c - 'A']) {
+            keyTable[k/5][k%5] = c;
+            used[c - 'A'] = 1;
+            k++;
+        }
+    }
+
+    for (c = 'A'; c <= 'Z'; c++) {
+        if (c == 'J') continue;
+        if (!used[c - 'A']) {
+            keyTable[k/5][k%5] = c;
+            k++;
+        }
+    }
+}
+
+void findPos(char c, int *r, int *c1)
+{
+    int i, j;
+    for (i = 0; i < 5; i++)
+        for (j = 0; j < 5; j++)
+            if (keyTable[i][j] == c) {
+                *r = i; *c1 = j;
+                return;
+            }
+}
+
+int main()
+{
+    char key[20], text[20];
+    int i, r1, c1, r2, c2;
+
+    printf("Enter keyword: ");
+    scanf("%s", key);
+    printf("Enter plaintext (even letters): ");
+    scanf("%s", text);
+
+    createKeyTable(key);
+
+    printf("\nEncrypted Text: ");
+    for (i = 0; i < strlen(text); i += 2) {
+        findPos(toupper(text[i]), &r1, &c1);
+        findPos(toupper(text[i+1]), &r2, &c2);
+
+        if (r1 == r2) {
+            printf("%c%c",
+                keyTable[r1][(c1+1)%5],
+                keyTable[r2][(c2+1)%5]);
+        }
+        else if (c1 == c2) {
+            printf("%c%c",
+                keyTable[(r1+1)%5][c1],
+                keyTable[(r2+1)%5][c2]);
+        }
+        else {
+            printf("%c%c",
+                keyTable[r1][c2],
+                keyTable[r2][c1]);
+        }
+    }
+    return 0;
+}
+```
 
 
 
 
 
 Output:
+
+<img width="596" height="589" alt="image" src="https://github.com/user-attachments/assets/6a7a3765-a781-4d3e-962f-281e49444fc7" />
+
+RESULT :
+
+The program was executed successfully.
+
